@@ -1,0 +1,46 @@
+version: "3"
+services:
+ poll:
+  image: poll
+  depends_on:
+   - redis
+  ports:
+   - 5000:80
+  networks:
+   - poll-tier
+ redis:
+  image: redis
+  ports:
+   - "6379:6379"
+  networks:
+   - poll-tier
+   - back-tier
+ worker:
+  image: worker
+  ports:
+    - "80:80"
+  networks:
+    - back-tier
+ result:
+  image: result
+  ports:
+    - "5001:80"
+  networks:
+    - result-tier
+ db:
+  image: db
+  restart: always
+  environment:
+   POSTGRES_PASSWORD: mypassword
+  volumes:
+    - ./db-data:/var/lib/postgresql/data
+  networks:
+    - result-tier
+    - back-tier
+
+networks:
+ poll-tier:
+
+ result-tier:
+
+ back-tier:
